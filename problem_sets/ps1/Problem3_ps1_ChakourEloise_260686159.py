@@ -30,10 +30,11 @@ def lakeshore(V,data):
         index = testPts[i]
         testTemp.append(temp[index])
         testVolt.append(volt[index])
+
     testVolt, testTemp = zip(*sorted(zip(testVolt, testTemp)))
     
-    interpTemp = [ value for value in temp if value not in testTemp]
-    interpVolt = [ value for value in volt if value not in testVolt]
+    interpTemp = [ t for t in temp if t not in testTemp]
+    interpVolt = [ v for v in volt if v not in testVolt]
 
     interpVolt, interpTemp = zip(*sorted(zip(interpVolt, interpTemp)))
 
@@ -57,9 +58,10 @@ def lakeshore(V,data):
 V = np.linspace(0.095, 1.600, 20)
 t, dt = lakeshore(V, dat)
 
+"""
 print(t)
 print(dt)
-
+"""
 
 
 

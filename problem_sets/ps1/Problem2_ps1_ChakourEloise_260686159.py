@@ -12,10 +12,10 @@ sqrtEps = np.sqrt(epsilon)
 x = 1.0
 
 
-def quadratic(x):
-    return x**2
+def x4(x):
+    return x**4
     
-func = quadratic
+func = np.exp
 
 #Take a first estimate for the first derivative using an arbitrary dx value
 def estimateFirstDer(fun, x, stepEst):
@@ -24,48 +24,48 @@ def estimateFirstDer(fun, x, stepEst):
     firstDer = (fun(x+stepEst) - fun(x-stepEst))/(2*stepEst)
     return firstDer
 
-#Testting
-estimate1 = estimateFirstDer(func, x, sqrtEps)
-trueVal = 2*x
-
-print("Testing First Derivative")
-print(estimate1)
-print(trueVal)
-print(estimate1 == trueVal)
-
-
-
-
-
 def estimateSecondDer(fun, x, stepEst):
     newX = x + stepEst
     stepEst = newX-x
-    #secondDer = (estimateFirstDer(fun, x+stepEst, stepEst) - estimateFirstDer(fun, x-stepEst, stepEst))/(2*stepEst)
     secondDer = (fun(x + 2*stepEst) + fun(x - 2*stepEst) - 2*fun(x) )/(4*stepEst**2)
     return secondDer
 
-estimate2 = estimateSecondDer(func, x, sqrtEps)
-
-print("Testing Second Derivative")
-print(estimate2)
-print(2)
-print(estimate2 == 2.0)
-
+def estimateThirdDer(fun, x, stepEst):
+    newX = x + stepEst
+    stepEst = newX-x
+    stepEst = np.sqrt(stepEst)
+    thirdDer = (fun(x + 3*stepEst) - 3*fun(x + stepEst) + 3* fun(x - stepEst) - fun(x - 3*stepEst))/(8*stepEst**3)
+    return thirdDer
 
 def newStepEst(fun, x, epsilon):
-    newStep = np.sqrt(epsilon*(fun(x)/ estimateSecondDer(fun, x, np.sqrt(epsilon))))
+    first = fun(x)
+    third = estimateThirdDer(fun, x, np.sqrt(epsilon))
+    newStep = (epsilon*(first)/ third)**(1.0/3.0)
     return newStep
 
-newStep = newStepEst(func, x, epsilon)
 
-print("This is the new dx size")
-print(newStep)
+def ndiff(fun, x, epsilon, full=False):
+    dxInitialGuess = np.sqrt(epsilon)
+    dxNewEstimate = newStepEst(fun, x, dxInitialGuess)
+    if full == False:
+        return estimateFirstDer(fun, x, dxNewEstimate)
+    elif full == True:
+        firstDerFull = lambda x : estimateFirstDer(fun, x, dxNewEstimate)
+        error = 0
+        return firstDerFull, dxNewEstimate, error
+    
+    
+numDer = ndiff(func, x, epsilon, full=False)
+print(numDer)
 
-newFirst = estimateFirstDer(func, 1, newStep)
-print("Testing First Derivative with new Step Size")
-print(newFirst)
-print(trueVal)
-print(newFirst == trueVal)
+
+first, dx, error = ndiff(func, x, epsilon, full=True)
+print(first(1))
+print(dx)
+print(error)
+
+
+
 
 
 
