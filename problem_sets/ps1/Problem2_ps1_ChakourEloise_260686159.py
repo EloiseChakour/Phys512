@@ -9,7 +9,7 @@ import numpy as np
 
 epsilon = 10**(-16)
 sqrtEps = np.sqrt(epsilon)
-x = 1.0
+x = np.linspace(0, 1, 10)
 
 
 def x4(x):
@@ -23,6 +23,7 @@ def estimateFirstDer(fun, x, stepEst):
     stepEst = newX- x
     firstDer = (fun(x+stepEst) - fun(x-stepEst))/(2*stepEst)
     return firstDer
+
 
 def estimateSecondDer(fun, x, stepEst):
     newX = x + stepEst
@@ -60,8 +61,6 @@ print(numDer)
 
 
 first, dx, error = ndiff(func, x, epsilon, full=True)
-print(first(1))
-print(dx)
 print(error)
 
 
