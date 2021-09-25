@@ -22,10 +22,10 @@ def integrate_adaptive(fun, a, b, tol, extra = None):
         failed_iterations = extra[2]
 
         
-    
     x = np.linspace(a, b, 5)
     y = fun(x)
     dx = (x[1]-x[0])/(len(x))
+    
     
     coarse_area = 2*dx*(y[0]+4*y[2]+y[4])/3
     fine_area = dx*(y[0]+4*y[1]+2*y[2]+4*y[3]+y[4])/3
