@@ -10,7 +10,7 @@ import numpy as np
 import sys
 
 def integrate_adaptive(fun, a, b, tol, extra = None):
-    print("Integrating between", a, b)
+    #print("Integrating between", a, b)
     
     if type(extra) != np.ndarray:
         old_error = 0
@@ -25,7 +25,7 @@ def integrate_adaptive(fun, a, b, tol, extra = None):
     
     x = np.linspace(a, b, 5)
     y = fun(x)
-    dx = (x[1]-x[0])/(len(x)-1)
+    dx = (x[1]-x[0])/(len(x))
     
     coarse_area = 2*dx*(y[0]+4*y[2]+y[4])/3
     fine_area = dx*(y[0]+4*y[1]+2*y[2]+4*y[3]+y[4])/3
@@ -38,13 +38,13 @@ def integrate_adaptive(fun, a, b, tol, extra = None):
 
 
 
-
+    
 
 
     #Return appropriate 
     if error <= tol: 
         #Return the result of the integration if the error is smaller than the tolerance
-        return total_area, error, counter, failed_iterations
+        return total_area, error, failed_iterations
     elif np.abs(error-old_error) <= 10**-14 :
         #Check to see if the error was appreciably changed by the last iteration and if the counter exists.
         if failed_iterations >= 3:
@@ -53,33 +53,35 @@ def integrate_adaptive(fun, a, b, tol, extra = None):
         else:
             #If there have not been 3 failed iterations, add 1 to the failed iteration counter
             failed_iterations += 1
-            #Do another integration loop
+            #Do another integration loop but cut in half
             info = np.zeros(3)
             info[0] = error
             info[1] = counter
             info[2] = failed_iterations
             new_x = (a+b)/2.0
-            area1, error1, counter1, failed_iterations1 = integrate_adaptive(fun, a, new_x, tol/2, info)
-            area2, error2, counter2, failed_iterations2 = integrate_adaptive(fun, new_x, b, tol/2, info)
+            area1, error1, failed_iterations1 = integrate_adaptive(fun, a, new_x, tol/2, info)
+            area2, error2, failed_iterations2 = integrate_adaptive(fun, new_x, b, tol/2, info)
             total_area += area1 + area2
-            counter = counter1
-            return total_area, error, counter, failed_iterations
+            error=error1 + error2
+            failed_iterations = failed_iterations1 + failed_iterations2
+            return total_area, error, failed_iterations
     else:
         #If there have not been more than 3 failed iterations and the error is not within tolerance, record and return the relevant information for a new iteration
         info = np.zeros(3)
         info[0] = error
         info[1] = counter
         info[2] = failed_iterations
-        #Do another integration loop
+        #Do another integration loop but cut in half
         new_x = (a+b)/2.0
-        area1, error1, counter1, failed_iterations1 = integrate_adaptive(fun, a, new_x, tol/2, info)
-        area2, error2, counter2, failed_iterations2 = integrate_adaptive(fun, new_x, b, tol/2, info)
+        area1, error1, failed_iterations1 = integrate_adaptive(fun, a, new_x, tol/2, info)
+        area2, error2, failed_iterations2 = integrate_adaptive(fun, new_x, b, tol/2, info)
         total_area += area1 + area2
-        counter = counter1
-        return total_area, error, counter, failed_iterations
+        error=error1+error2
+        failed_iterations = failed_iterations1 + failed_iterations2
+        return total_area, error, failed_iterations
 
 
-
+#Some Tester Functions I used
 def lorentz(x):
     lor = 1.0/(1.0 + x**2)
     return lor
@@ -87,10 +89,18 @@ def lorentz(x):
 def linear(x):
     return x
 
-area, error, counter, failed_iterations = integrate_adaptive(lorentz, 0, 1, 1e-7)
+# Testing parameters
+fun = np.sin
+a = 0
+b = np.pi
+tol = 1e-7
+
+#Compute the integral
+area, error, failed_iterations = integrate_adaptive(fun, a, b, tol)
+
+#Print the results
 print("The area is", area)
 print("The error is", error)
-print("The number of iterations was", counter)
 print("The number of failed iterations was", failed_iterations)
 
 
