@@ -1,0 +1,1 @@
+This isn't quite right when it comes to my integrator. I think it's because I'm not handling the discontinuity directly and just trating it by separating the integrator and trating it like a peak, so the feature is much smaller. The 1/z**2 aspect isn't really seen with larger values of R, but there is a hint of it for R=1.0. 
